@@ -98,3 +98,39 @@ audio { width: 170px; border-radius: 14px; }
 
 .metrics { font-size: 11px; color: #9ca3af; text-align: center; line-height: 1.25; }
 .metrics .err { font-weight: 600; }
+
+
+/* --- Light theme overrides: paste at the END of style.css --- */
+
+body { background: #f9fafb; color: #111827; }
+
+.header h1 { color: #0f172a; }
+.subtitle { color: #4b5563; }
+
+.figure-wrap { }
+.arch-img {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+.card-header { border-bottom: 1px solid #e5e7eb; }
+
+.tag {
+  color: #075985;                 /* slate-blue text */
+  background: #e0f2fe;            /* light cyan badge */
+}
+
+.hgrid6 .h1, .hgrid6 .h2, .hgrid6 .h3 { color: #6b7280; }  /* headings */
+.alabel { color: #374151; }                                 /* labels */
+
+.missing {
+  color: #6b7280;
+  background: #f3f4f6;
+  border: 1px dashed #d1d5db;
+}
+
+.footer { color: #6b7280; }
