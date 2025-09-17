@@ -111,13 +111,18 @@ function cardHTML(entry){
 
 async function load(){
   try{
-    const resp = await fetch("manifest.json", { cache: "no-store" });
-    const data = await resp.json();
+    const resp = await fetch("manifest.json?v=" + Date.now(), { cache: "no-store" });
+    let txt = await resp.text();
+    txt = txt.replace(/^\uFEFF/, "");           // strip UTF-8 BOM if present
+    const data = JSON.parse(txt);
     window.__DATA__ = data;
     render();
   }catch(e){
     document.getElementById("grid").innerHTML =
-      `<div class="card"><div class="card-body">Failed to load manifest.json.</div></div>`;
+      `<div class="card"><div class="card-body">
+        Failed to load manifest.json.<br>
+        <small>${String(e).replace(/</g,"&lt;")}</small>
+      </div></div>`;
   }
 }
 
