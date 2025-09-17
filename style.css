@@ -61,12 +61,20 @@ body {
   display: flex;
   gap: 12px;
   padding: 8px 16px 14px;
-  overflow-x: auto; /* keeps everything on one line */
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;        /* <-- important */
 }
-.acol { min-width: 230px; display: flex; flex-direction: column; gap: 6px; }
+.acol {
+  min-width: 0;
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
 .alabel { font-size: 12px; color: #cbd5e1; text-align: center; }
-audio { width: 100%; border-radius: 14px; }
+audio { width: 170px; border-radius: 14px; }
 .missing { height: 40px; display: grid; place-items: center; color: #64748b; background: #0b0f1c; border: 1px dashed #1f2937; border-radius: 12px; }
 
 .footer { text-align: center; color: #64748b; margin: 28px 0 40px; }
