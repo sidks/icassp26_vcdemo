@@ -95,3 +95,6 @@ audio { width: 170px; border-radius: 14px; }
   width: 180px !important;
   max-width: 180px !important;
 }
+
+.metrics { font-size: 11px; color: #9ca3af; text-align: center; line-height: 1.25; }
+.metrics .err { font-weight: 600; }
