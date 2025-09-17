@@ -1,17 +1,15 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE CONVERSION</title>
-<meta name="description" content="Listen to ground truth, baseline, and proposed VC samples." />
+<meta name="description" content="Ground Truth vs. Baselines vs. Proposed VC samples." />
 <link rel="stylesheet" href="style.css" />
 <link rel="icon" href="img/cover.png" />
 <meta property="og:title" content="Conditional Diffusion Models for MH-Preserving Voice Conversion" />
-<meta property="og:description" content="Ground truth (Original, Target), baselines (Vevo, QuickVC), proposed (DM-23M, DM-67M)." />
+<meta property="og:description" content="Original/Target, Vevo/QuickVC, DM-23M/DM-67M." />
 <meta property="og:image" content="img/architecture.jpg" />
-<meta property="og:type" content="website" />
 </head>
 <body>
   <header class="header">
@@ -22,9 +20,14 @@
     <p class="subtitle">Ground Truth vs. Baselines vs. Proposed</p>
   </header>
 
-  <!-- Architecture figure -->
+  <!-- Architecture figure (JPG) with fallback link if the path is wrong) -->
   <section class="figure-wrap">
-    <img src="img/architecture.jpg" alt="Model architecture" class="arch-img" />
+    <img id="arch-img" src="img/architecture.jpg" alt="Model architecture" class="arch-img"
+         loading="lazy" decoding="async"
+         onerror="this.hidden=true;document.getElementById('arch-fallback').hidden=false;">
+    <div id="arch-fallback" class="arch-fallback" hidden>
+      Image not found. Verify <code>img/architecture.jpg</code> exists (case-sensitive).
+    </div>
   </section>
 
   <main id="grid" class="grid" aria-live="polite"></main>
@@ -34,7 +37,7 @@
 <script>
 const el = (s)=>document.querySelector(s);
 
-// pause other players when one starts
+// Pause other players when one starts
 function wireExclusivePlayback(root) {
   root.addEventListener("play", e => {
     if (e.target.tagName !== "AUDIO") return;
@@ -47,22 +50,23 @@ function findModel(entry, name){
 }
 
 function audioColHTML(label, file){
-  if (!file) {
-    return `<div class="acol"><div class="alabel">${label}</div><div class="missing">—</div></div>`;
-  }
   return `
     <div class="acol">
       <div class="alabel">${label}</div>
-      <audio controls preload="none" src="${file}"></audio>
+      ${file ? `<audio controls preload="none" src="${file}"></audio>`
+             : `<div class="missing">—</div>`}
     </div>
   `;
 }
 
 function cardHTML(entry){
+  // Ground Truth
   const orig  = findModel(entry, "Original");
   const tgt   = findModel(entry, "Target");
+  // Baselines
   const vevo  = findModel(entry, "Vevo-Voice");
   const quick = findModel(entry, "QuickVC");
+  // Proposed
   const dm23  = findModel(entry, "DM-23M");
   const dm67  = findModel(entry, "DM-67M");
 
@@ -73,15 +77,15 @@ function cardHTML(entry){
         <span class="tag">${(entry.pair || (entry.src_speaker && entry.tgt_speaker ? entry.src_speaker + "→" + entry.tgt_speaker : ""))}</span>
       </div>
 
-      <!-- Group headings (2 cols each) -->
-      <div class="hgrid headings">
-        <div class="h1">Ground Truth</div>
-        <div class="h2">Baselines</div>
-        <div class="h3">Proposed</div>
+      <!-- Group headings: GT spans 2, Baselines 2, Proposed 2 -->
+      <div class="headings hgrid6">
+        <div class="h1">GROUND TRUTH</div>
+        <div class="h2">BASELINES</div>
+        <div class="h3">PROPOSED</div>
       </div>
 
-      <!-- Six horizontally aligned players: Original, Target, Vevo, QuickVC, DM-23M, DM-67M -->
-      <div class="hgrid players players-6">
+      <!-- Six players in one horizontal row (scrolls on small screens) -->
+      <div class="players-6 nowrap-row" role="group" aria-label="Audio comparisons">
         ${audioColHTML("Original",  orig && orig.file)}
         ${audioColHTML("Target",    tgt  && tgt.file)}
         ${audioColHTML("Vevo-Voice",vevo && vevo.file)}
@@ -100,18 +104,19 @@ async function load(){
     window.__DATA__ = data;
     render();
   }catch(e){
-    el("#grid").innerHTML = `<div class="card"><div class="card-body">Failed to load manifest.json.</div></div>`;
+    document.getElementById("grid").innerHTML =
+      `<div class="card"><div class="card-body">Failed to load manifest.json.</div></div>`;
   }
 }
 
 function render(){
   const data = window.__DATA__ || [];
-  el("#grid").innerHTML = data.map(cardHTML).join("");
-  wireExclusivePlayback(el("#grid"));
+  document.getElementById("grid").innerHTML = data.map(cardHTML).join("");
+  wireExclusivePlayback(document.getElementById("grid"));
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
-  el("#year").textContent = new Date().getFullYear();
+  document.getElementById("year").textContent = new Date().getFullYear();
   load();
 });
 </script>
