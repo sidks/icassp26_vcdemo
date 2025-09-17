@@ -50,22 +50,20 @@ function findModel(entry, name){
 }
 
 function audioColHTML(label, file, opts = {}) {
-  const { showReal=false, real=null, pred=null, baseReal=null } = opts;
+  const { showReal = false, real = null, pred = null, baseReal = null } = opts;
 
-  // error vs baseReal (absolute)
   const hasErr = (pred != null && baseReal != null);
-  const err = hasErr ? Math.abs(pred - baseReal) : null;
+  const err = hasErr ? Math.abs(Number(pred) - Number(baseReal)) : null;
 
   const lines = [];
-  if (showReal && real != null)   lines.push(`PHQ-8 (real): ${(+real).toFixed(2)}`);
-  if (pred != null)               lines.push(`PHQ-8 (pred): ${(+pred).toFixed(2)}`);
-  if (hasErr)                     lines.push(`<span class="err">err: ${err.toFixed(2)}</span>`);
+  if (showReal && real != null) lines.push(`PHQ-8 (real): ${Number(real).toFixed(2)}`);
+  if (pred != null)             lines.push(`PHQ-8 (pred): ${Number(pred).toFixed(2)}`);
+  if (hasErr)                   lines.push(`<span class="err">err: ${err.toFixed(2)}</span>`);
 
   return `
     <div class="acol">
       <div class="alabel">${label}</div>
-      ${file ? `<audio controls preload="none" src="${file}"></audio>`
-             : `<div class="missing">—</div>`}
+      ${file ? `<audio controls preload="none" src="${file}"></audio>` : `<div class="missing">—</div>`}
       ${lines.length ? `<div class="metrics">${lines.join("<br/>")}</div>` : ""}
     </div>
   `;
@@ -82,6 +80,8 @@ function cardHTML(entry){
   const dm23  = findModel(entry, "DM-23M");
   const dm67  = findModel(entry, "DM-67M");
 
+  const real = entry.phq8_real ?? null;
+  
   return `
     <article class="card">
       <div class="card-header">
@@ -113,19 +113,18 @@ async function load(){
   try{
     const resp = await fetch("manifest.json?v=" + Date.now(), { cache: "no-store" });
     let txt = await resp.text();
-    txt = txt.replace(/^\uFEFF/, "");           // strip UTF-8 BOM if present
-    const data = JSON.parse(txt);
-    window.__DATA__ = data;
+    txt = txt.replace(/^\uFEFF/, "");      // strip UTF-8 BOM
+    window.__DATA__ = JSON.parse(txt);
     render();
   }catch(e){
+    console.error(e);
     document.getElementById("grid").innerHTML =
       `<div class="card"><div class="card-body">
-        Failed to load manifest.json.<br>
-        <small>${String(e).replace(/</g,"&lt;")}</small>
-      </div></div>`;
+         Failed to render data.<br><small>${String(e).replace(/</g,"&lt;")}</small>
+       </div></div>`;
   }
 }
-
+  
 function render(){
   const data = window.__DATA__ || [];
   document.getElementById("grid").innerHTML = data.map(cardHTML).join("");
