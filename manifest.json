@@ -12,5 +12,47 @@
       { "name": "Vevo-Voice", "file": "audio/001_vevo.wav" },
       { "name": "QuickVC",    "file": "audio/001_quickvc.wav" }
     ]
+  }, 
+  {
+    "id": "002",
+    "src_speaker": "637",
+    "tgt_speaker": "705",
+    "pair": "637→705",
+    "models": [
+      { "name": "Original",   "file": "audio/002_original.wav" },
+      { "name": "Target",     "file": "audio/002_target.wav" },
+      { "name": "DM-23M",     "file": "audio/002_DM23M.wav" },
+      { "name": "DM-67M",     "file": "audio/002_DM67M.wav" },
+      { "name": "Vevo-Voice", "file": "audio/002_vevo.wav" },
+      { "name": "QuickVC",    "file": "audio/002_quickvc.wav" }
+    ]
+  },
+  {
+    "id": "003",
+    "src_speaker": "710",
+    "tgt_speaker": "620",
+    "pair": "710→620",
+    "models": [
+      { "name": "Original",   "file": "audio/003_original.wav" },
+      { "name": "Target",     "file": "audio/003_target.wav" },
+      { "name": "DM-23M",     "file": "audio/003_DM23M.wav" },
+      { "name": "DM-67M",     "file": "audio/003_DM67M.wav" },
+      { "name": "Vevo-Voice", "file": "audio/003_vevo.wav" },
+      { "name": "QuickVC",    "file": "audio/003_quickvc.wav" }
+    ]
+  },
+  {
+    "id": "004",
+    "src_speaker": "619",
+    "tgt_speaker": "605",
+    "pair": "619→605",
+    "models": [
+      { "name": "Original",   "file": "audio/004_original.wav" },
+      { "name": "Target",     "file": "audio/004_target.wav" },
+      { "name": "DM-23M",     "file": "audio/004_DM23M.wav" },
+      { "name": "DM-67M",     "file": "audio/004_DM67M.wav" },
+      { "name": "Vevo-Voice", "file": "audio/004_vevo.wav" },
+      { "name": "QuickVC",    "file": "audio/004_quickvc.wav" }
+    ]
   }
 ]
