@@ -1,0 +1,146 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE CONVERSION</title>
+<meta name="description" content="Ground Truth vs. Baselines vs. Proposed VC samples." />
+<link rel="stylesheet" href="style.css" />
+<link rel="icon" href="img/cover.png" />
+<meta property="og:title" content="Conditional Diffusion Models for MH-Preserving Voice Conversion" />
+<meta property="og:description" content="Original/Target, Vevo/QuickVC, DM-23M/DM-67M." />
+<meta property="og:image" content="img/architecture.jpg" />
+</head>
+<body>
+  <header class="header">
+    <h1>
+      CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE<br/>
+      CONVERSION
+    </h1>
+    <p class="subtitle">Ground Truth vs. Baselines vs. Proposed</p>
+  </header>
+
+  <!-- Architecture figure (JPG) with fallback link if the path is wrong) -->
+  <section class="figure-wrap">
+    <img id="arch-img" src="img/architecture.jpg" alt="Model architecture" class="arch-img"
+         loading="lazy" decoding="async"
+         onerror="this.hidden=true;document.getElementById('arch-fallback').hidden=false;">
+    <div id="arch-fallback" class="arch-fallback" hidden>
+      Image not found. Verify <code>img/architecture.jpg</code> exists (case-sensitive).
+    </div>
+  </section>
+  
+  <section class="section-title">
+    <h2>Zero-Shot Scenario</h2>
+    <p>Speakers that were not seen during training.</p>
+  </section>
+
+  <main id="grid" class="grid" aria-live="polite"></main>
+
+  <p class="footer">© <span id="year"></span></p>
+
+<script>
+const el = (s)=>document.querySelector(s);
+
+// Pause other players when one starts
+function wireExclusivePlayback(root) {
+  root.addEventListener("play", e => {
+    if (e.target.tagName !== "AUDIO") return;
+    for (const a of root.querySelectorAll("audio")) if (a !== e.target) a.pause();
+  }, true);
+}
+
+function findModel(entry, name){
+  return entry.models.find(m => (m.name || "").toLowerCase() === name.toLowerCase());
+}
+
+function audioColHTML(label, file, opts = {}) {
+  const { showReal = false, real = null, pred = null, baseReal = null } = opts;
+
+  const hasErr = (pred != null && baseReal != null);
+  const err = hasErr ? Math.abs(Number(pred) - Number(baseReal)) : null;
+
+  const lines = [];
+  if (showReal && real != null) lines.push(`PHQ-8 (real): ${Number(real).toFixed(2)}`);
+  if (pred != null)             lines.push(`PHQ-8 (pred): ${Number(pred).toFixed(2)}`);
+  if (hasErr)                   lines.push(`<span class="err">err: ${err.toFixed(2)}</span>`);
+
+  return `
+    <div class="acol">
+      <div class="alabel">${label}</div>
+      ${file ? `<audio controls preload="none" src="${file}"></audio>` : `<div class="missing">—</div>`}
+      ${lines.length ? `<div class="metrics">${lines.join("<br/>")}</div>` : ""}
+    </div>
+  `;
+}
+
+function cardHTML(entry){
+  // Ground Truth
+  const orig  = findModel(entry, "Original");
+  const tgt   = findModel(entry, "Target");
+  // Baselines
+  const vevo  = findModel(entry, "Vevo-Voice");
+  const quick = findModel(entry, "QuickVC");
+  // Proposed
+  const dm23  = findModel(entry, "DM-23M");
+  const dm67  = findModel(entry, "DM-67M");
+
+  const real = entry.phq8_real ?? null;
+  
+  return `
+    <article class="card">
+      <div class="card-header">
+        <strong>#${entry.id || ""}</strong>
+        <span class="tag">${(entry.pair || (entry.src_speaker && entry.tgt_speaker ? entry.src_speaker + "→" + entry.tgt_speaker : ""))}</span>
+      </div>
+
+      <!-- Group headings: GT spans 2, Baselines 2, Proposed 2 -->
+      <div class="headings hgrid6">
+        <div class="h1">GROUND TRUTH</div>
+        <div class="h2">BASELINES</div>
+        <div class="h3">PROPOSED</div>
+      </div>
+
+      <!-- Six players in one horizontal row (scrolls on small screens) -->
+      <div class="players-6 nowrap-row" role="group" aria-label="Audio comparisons">
+        ${audioColHTML("Original",  orig && orig.file, { showReal:true, real:real, pred:orig && orig.phq8_pred, baseReal:real })}
+        ${audioColHTML("Target",    tgt  && tgt.file,  { /* no metrics */ })}
+        ${audioColHTML("Vevo-Voice",vevo && vevo.file, { pred:vevo && vevo.phq8_pred, baseReal:real })}
+        ${audioColHTML("QuickVC",   quick&& quick.file,{ pred:quick&& quick.phq8_pred, baseReal:real })}
+        ${audioColHTML("DM-23M",    dm23 && dm23.file, { pred:dm23 && dm23.phq8_pred, baseReal:real })}
+        ${audioColHTML("DM-67M",    dm67 && dm67.file, { pred:dm67 && dm67.phq8_pred, baseReal:real })}
+      </div>
+    </article>
+  `;
+}
+
+async function load(){
+  try{
+    const resp = await fetch("manifest.json?v=" + Date.now(), { cache: "no-store" });
+    let txt = await resp.text();
+    txt = txt.replace(/^\uFEFF/, "");      // strip UTF-8 BOM
+    window.__DATA__ = JSON.parse(txt);
+    render();
+  }catch(e){
+    console.error(e);
+    document.getElementById("grid").innerHTML =
+      `<div class="card"><div class="card-body">
+         Failed to render data.<br><small>${String(e).replace(/</g,"&lt;")}</small>
+       </div></div>`;
+  }
+}
+  
+function render(){
+  const data = window.__DATA__ || [];
+  document.getElementById("grid").innerHTML = data.map(cardHTML).join("");
+  wireExclusivePlayback(document.getElementById("grid"));
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  document.getElementById("year").textContent = new Date().getFullYear();
+  load();
+});
+</script>
+</body>
+</html>
