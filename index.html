@@ -3,117 +3,110 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Voice Conversion Demo</title>
-<meta name="description" content="Demo samples for voice conversion models (DM-23M, DM-67M, Vevo-Voice, QuickVC).">
+<title>CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE CONVERSION</title>
+<meta name="description" content="Listen to original vs. baseline vs. proposed VC samples." />
 <link rel="stylesheet" href="style.css" />
 <link rel="icon" href="img/cover.png" />
-<meta property="og:title" content="Voice Conversion Demo" />
-<meta property="og:description" content="Listen to original vs. converted speech across multiple VC models." />
+<meta property="og:title" content="Conditional Diffusion Models for MH-Preserving Voice Conversion" />
+<meta property="og:description" content="Ground truth, baselines (Vevo, QuickVC), and proposed (DM-23M, DM-67M)." />
 <meta property="og:image" content="img/cover.png" />
 <meta property="og:type" content="website" />
 </head>
 <body>
   <header class="header">
-    <h1>Voice Conversion Demo
-      <span class="badge" title="Preload off for faster page loads">preload=none</span>
+    <h1>
+      CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE<br/>
+      CONVERSION
     </h1>
-    <p>Compare <strong>Original</strong> against <strong>DM-23M</strong>, <strong>DM-67M</strong>, <strong>Vevo-Voice</strong>, and <strong>QuickVC</strong>. Use filters to narrow by speaker or model.</p>
+    <p class="subtitle">Ground Truth vs. Baselines vs. Proposed</p>
   </header>
 
-  <section class="controls">
-    <input id="q" type="search" placeholder="Search text, ID, or 615→625…" />
-    <select id="model">
-      <option value="">All models</option>
-      <option>Original</option>
-      <option>DM-23M</option>
-      <option>DM-67M</option>
-      <option>Vevo-Voice</option>
-      <option>QuickVC</option>
-    </select>
-    <input id="speaker" type="search" placeholder="Filter: src/tgt (e.g., 615 or 615→625)" />
+  <!-- Architecture figure -->
+  <section class="figure-wrap">
+    <!-- Rename the file if needed -->
+    <img src="img/architecture.png" alt="Model architecture" class="arch-img" />
   </section>
 
-  <main class="grid" id="grid" aria-live="polite"></main>
+  <main id="grid" class="grid" aria-live="polite"></main>
 
-  <p class="footer">© <span id="year"></span> — Built for fast sharing on GitHub Pages.</p>
+  <p class="footer">© <span id="year"></span></p>
 
 <script>
-const state = { q: "", model: "", spk: "" };
-const el = (sel)=>document.querySelector(sel);
+const el = (s)=>document.querySelector(s);
 
-// Ensure only one audio plays at a time
-function wireExclusivePlayback(container) {
-  container.addEventListener("play", e => {
+// pause other players when one starts
+function wireExclusivePlayback(root) {
+  root.addEventListener("play", e => {
     if (e.target.tagName !== "AUDIO") return;
-    for (const a of container.querySelectorAll("audio")) {
-      if (a !== e.target) a.pause();
-    }
+    for (const a of root.querySelectorAll("audio")) if (a !== e.target) a.pause();
   }, true);
 }
 
-function matches(entry) {
-  const q = state.q.trim().toLowerCase();
-  const m = state.model;
-  const s = state.spk.trim();
-
-  if (q) {
-    const hay = (entry.id + " " + (entry.utt_text||"") + " " + entry.pair).toLowerCase();
-    if (!hay.includes(q)) return false;
-  }
-  if (m) {
-    if (!entry.models.some(mm => mm.name === m)) return false;
-  }
-  if (s) {
-    const want = s.replace(/\s/g,"");
-    const comb = (entry.src_speaker + "→" + entry.tgt_speaker);
-    if (!(entry.src_speaker === s || entry.tgt_speaker === s || comb === want)) return false;
-  }
-  return true;
+function findModel(entry, name){
+  return entry.models.find(m => (m.name || "").toLowerCase() === name.toLowerCase());
 }
 
-function cardHTML(entry) {
-  const safe = s => (s||"").replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-  const rows = entry.models.map(m => `
-    <div class="model-row">
-      <div class="model-name">${safe(m.name)}</div>
-      <audio controls preload="none" src="${safe(m.file)}"></audio>
+function audioColHTML(label, file){
+  if (!file) {
+    return `<div class="acol"><div class="alabel">${label}</div><div class="missing">—</div></div>`;
+  }
+  return `
+    <div class="acol">
+      <div class="alabel">${label}</div>
+      <audio controls preload="none" src="${file}"></audio>
     </div>
-  `).join("");
+  `;
+}
+
+function cardHTML(entry){
+  const gt = findModel(entry, "Original");
+  const vevo = findModel(entry, "Vevo-Voice");
+  const quick = findModel(entry, "QuickVC");
+  const dm23 = findModel(entry, "DM-23M");
+  const dm67 = findModel(entry, "DM-67M");
 
   return `
     <article class="card">
       <div class="card-header">
-        <strong>#${safe(entry.id)}</strong>
-        <span class="tag">${safe(entry.pair)}</span>
+        <strong>#${entry.id || ""}</strong>
+        <span class="tag">${(entry.pair || (entry.src_speaker && entry.tgt_speaker ? entry.src_speaker + "→" + entry.tgt_speaker : ""))}</span>
       </div>
-      <div class="card-body">
-        ${entry.utt_text ? `<div class="small">“${safe(entry.utt_text)}”</div><hr class="sep" />` : ""}
-        ${rows}
+
+      <!-- Group headings -->
+      <div class="hgrid headings">
+        <div class="h1">Ground Truth</div>
+        <div class="h2">Baselines</div>
+        <div class="h3">Proposed</div>
+      </div>
+
+      <!-- Five horizontally aligned players -->
+      <div class="hgrid players">
+        ${audioColHTML("Original", gt && gt.file)}
+        ${audioColHTML("Vevo-Voice", vevo && vevo.file)}
+        ${audioColHTML("QuickVC", quick && quick.file)}
+        ${audioColHTML("DM-23M", dm23 && dm23.file)}
+        ${audioColHTML("DM-67M", dm67 && dm67.file)}
       </div>
     </article>
   `;
 }
 
-async function load() {
-  try {
+async function load(){
+  try{
     const resp = await fetch("manifest.json", { cache: "no-store" });
     const data = await resp.json();
     window.__DATA__ = data;
     render();
-  } catch (e) {
-    el("#grid").innerHTML = `<div class="card"><div class="card-body">Failed to load manifest.json. Make sure it’s in the repo root.</div></div>`;
+  }catch(e){
+    el("#grid").innerHTML = `<div class="card"><div class="card-body">Failed to load manifest.json.</div></div>`;
   }
 }
 
-function render() {
-  const data = (window.__DATA__ || []).filter(matches);
-  el("#grid").innerHTML = data.map(cardHTML).join("") || `<div class="card"><div class="card-body">No matches.</div></div>`;
+function render(){
+  const data = window.__DATA__ || [];
+  el("#grid").innerHTML = data.map(cardHTML).join("");
   wireExclusivePlayback(el("#grid"));
 }
-
-el("#q").addEventListener("input", (e)=>{ state.q = e.target.value; render(); });
-el("#model").addEventListener("change", (e)=>{ state.model = e.target.value; render(); });
-el("#speaker").addEventListener("input", (e)=>{ state.spk = e.target.value; render(); });
 
 document.addEventListener("DOMContentLoaded", ()=>{
   el("#year").textContent = new Date().getFullYear();
