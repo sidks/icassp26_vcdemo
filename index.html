@@ -1,15 +1,16 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CONDITIONAL DIFFUSION MODELS FOR MENTAL HEALTH-PRESERVING VOICE CONVERSION</title>
-<meta name="description" content="Listen to original vs. baseline vs. proposed VC samples." />
+<meta name="description" content="Listen to ground truth, baseline, and proposed VC samples." />
 <link rel="stylesheet" href="style.css" />
-<link rel="icon" href="img/cover.jpg" />
+<link rel="icon" href="img/cover.png" />
 <meta property="og:title" content="Conditional Diffusion Models for MH-Preserving Voice Conversion" />
-<meta property="og:description" content="Ground truth, baselines (Vevo, QuickVC), and proposed (DM-23M, DM-67M)." />
-<meta property="og:image" content="img/cover.jpg" />
+<meta property="og:description" content="Ground truth (Original, Target), baselines (Vevo, QuickVC), proposed (DM-23M, DM-67M)." />
+<meta property="og:image" content="img/cover.png" />
 <meta property="og:type" content="website" />
 </head>
 <body>
@@ -23,8 +24,7 @@
 
   <!-- Architecture figure -->
   <section class="figure-wrap">
-    <!-- Rename the file if needed -->
-    <img src="img/architecture.jpg" alt="Model architecture" class="arch-img" />
+    <img src="img/architecture.png" alt="Model architecture" class="arch-img" />
   </section>
 
   <main id="grid" class="grid" aria-live="polite"></main>
@@ -59,11 +59,12 @@ function audioColHTML(label, file){
 }
 
 function cardHTML(entry){
-  const gt = findModel(entry, "Original");
-  const vevo = findModel(entry, "Vevo-Voice");
+  const orig  = findModel(entry, "Original");
+  const tgt   = findModel(entry, "Target");
+  const vevo  = findModel(entry, "Vevo-Voice");
   const quick = findModel(entry, "QuickVC");
-  const dm23 = findModel(entry, "DM-23M");
-  const dm67 = findModel(entry, "DM-67M");
+  const dm23  = findModel(entry, "DM-23M");
+  const dm67  = findModel(entry, "DM-67M");
 
   return `
     <article class="card">
@@ -72,20 +73,21 @@ function cardHTML(entry){
         <span class="tag">${(entry.pair || (entry.src_speaker && entry.tgt_speaker ? entry.src_speaker + "→" + entry.tgt_speaker : ""))}</span>
       </div>
 
-      <!-- Group headings -->
+      <!-- Group headings (2 cols each) -->
       <div class="hgrid headings">
         <div class="h1">Ground Truth</div>
         <div class="h2">Baselines</div>
         <div class="h3">Proposed</div>
       </div>
 
-      <!-- Five horizontally aligned players -->
-      <div class="hgrid players">
-        ${audioColHTML("Original", gt && gt.file)}
-        ${audioColHTML("Vevo-Voice", vevo && vevo.file)}
-        ${audioColHTML("QuickVC", quick && quick.file)}
-        ${audioColHTML("DM-23M", dm23 && dm23.file)}
-        ${audioColHTML("DM-67M", dm67 && dm67.file)}
+      <!-- Six horizontally aligned players: Original, Target, Vevo, QuickVC, DM-23M, DM-67M -->
+      <div class="hgrid players players-6">
+        ${audioColHTML("Original",  orig && orig.file)}
+        ${audioColHTML("Target",    tgt  && tgt.file)}
+        ${audioColHTML("Vevo-Voice",vevo && vevo.file)}
+        ${audioColHTML("QuickVC",   quick&& quick.file)}
+        ${audioColHTML("DM-23M",    dm23 && dm23.file)}
+        ${audioColHTML("DM-67M",    dm67 && dm67.file)}
       </div>
     </article>
   `;
