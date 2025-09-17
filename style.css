@@ -78,3 +78,20 @@ audio { width: 170px; border-radius: 14px; }
 .missing { height: 40px; display: grid; place-items: center; color: #64748b; background: #0b0f1c; border: 1px dashed #1f2937; border-radius: 12px; }
 
 .footer { text-align: center; color: #64748b; margin: 28px 0 40px; }
+
+/* --- force small audio pills in one horizontal row --- */
+.nowrap-row { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; }
+
+.nowrap-row .acol { width: auto; min-width: 0; align-items: center; }
+
+.nowrap-row audio {
+  width: 180px !important;     /* adjust 150–200px as you like */
+  min-width: 0 !important;     /* override UA min-width */
+  flex: 0 0 auto;              /* don't stretch */
+}
+
+/* WebKit (Chrome/Safari) also needs this to shrink the chrome */
+.nowrap-row audio::-webkit-media-controls-enclosure {
+  width: 180px !important;
+  max-width: 180px !important;
+}
