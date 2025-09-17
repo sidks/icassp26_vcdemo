@@ -134,3 +134,20 @@ body { background: #f9fafb; color: #111827; }
 }
 
 .footer { color: #6b7280; }
+
+.section-title {
+  max-width: var(--maxw);
+  margin: 8px auto 8px;
+  padding: 0 16px;
+  text-align: center;
+}
+.section-title h2 {
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+}
+.section-title p {
+  margin: 0;
+  font-size: 16px;
+  color: #6b7280; /* subtle subtitle (looks good on light theme) */
+}
