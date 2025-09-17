@@ -49,12 +49,24 @@ function findModel(entry, name){
   return entry.models.find(m => (m.name || "").toLowerCase() === name.toLowerCase());
 }
 
-function audioColHTML(label, file){
+function audioColHTML(label, file, opts = {}) {
+  const { showReal=false, real=null, pred=null, baseReal=null } = opts;
+
+  // error vs baseReal (absolute)
+  const hasErr = (pred != null && baseReal != null);
+  const err = hasErr ? Math.abs(pred - baseReal) : null;
+
+  const lines = [];
+  if (showReal && real != null)   lines.push(`PHQ-8 (real): ${(+real).toFixed(2)}`);
+  if (pred != null)               lines.push(`PHQ-8 (pred): ${(+pred).toFixed(2)}`);
+  if (hasErr)                     lines.push(`<span class="err">err: ${err.toFixed(2)}</span>`);
+
   return `
     <div class="acol">
       <div class="alabel">${label}</div>
       ${file ? `<audio controls preload="none" src="${file}"></audio>`
              : `<div class="missing">—</div>`}
+      ${lines.length ? `<div class="metrics">${lines.join("<br/>")}</div>` : ""}
     </div>
   `;
 }
@@ -86,12 +98,12 @@ function cardHTML(entry){
 
       <!-- Six players in one horizontal row (scrolls on small screens) -->
       <div class="players-6 nowrap-row" role="group" aria-label="Audio comparisons">
-        ${audioColHTML("Original",  orig && orig.file)}
-        ${audioColHTML("Target",    tgt  && tgt.file)}
-        ${audioColHTML("Vevo-Voice",vevo && vevo.file)}
-        ${audioColHTML("QuickVC",   quick&& quick.file)}
-        ${audioColHTML("DM-23M",    dm23 && dm23.file)}
-        ${audioColHTML("DM-67M",    dm67 && dm67.file)}
+        ${audioColHTML("Original",  orig && orig.file, { showReal:true, real:real, pred:orig && orig.phq8_pred, baseReal:real })}
+        ${audioColHTML("Target",    tgt  && tgt.file,  { /* no metrics */ })}
+        ${audioColHTML("Vevo-Voice",vevo && vevo.file, { pred:vevo && vevo.phq8_pred, baseReal:real })}
+        ${audioColHTML("QuickVC",   quick&& quick.file,{ pred:quick&& quick.phq8_pred, baseReal:real })}
+        ${audioColHTML("DM-23M",    dm23 && dm23.file, { pred:dm23 && dm23.phq8_pred, baseReal:real })}
+        ${audioColHTML("DM-67M",    dm67 && dm67.file, { pred:dm67 && dm67.phq8_pred, baseReal:real })}
       </div>
     </article>
   `;
