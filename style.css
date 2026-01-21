@@ -1,153 +1,134 @@
 :root { --maxw: 1100px; }
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  background: #0b0c10;
-  color: #e5e7eb;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background: #f9fafb;
+  color: #111827;
 }
 
 /* Header */
 .header { max-width: var(--maxw); margin: 36px auto 8px; padding: 0 16px; }
-.header h1 { margin: 0 0 8px; font-size: 26px; line-height: 1.25; letter-spacing: 0.2px; text-transform: uppercase; text-align: center;}
-.subtitle { margin: 0; color: #9ca3af; text-align: center;}
-
-/* Figure */
-.figure-wrap { max-width: var(--maxw); margin: 14px auto 24px; padding: 0 16px; }
-.arch-img {
-  width: 100%; height: auto; display: block;
-  background: #0f172a; border: 1px solid #1f2937; border-radius: 16px;
+.header h1 {
+  margin: 0;
+  font-size: 26px;
+  text-align: center;
+  line-height: 1.25;
+  text-transform: uppercase;
 }
-.arch-fallback { color: #9ca3af; font-size: 14px; padding: 8px 10px; background: #0f172a; border: 1px dashed #334155; border-radius: 12px; }
+
+/* Architecture */
+.figure-wrap { max-width: var(--maxw); margin: 14px auto 16px; padding: 0 16px; }
+.arch-img {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+/* Mobile hint */
+.mobile-hint {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 auto 10px;
+}
+
+/* Section title */
+.section-title { text-align: center; margin-bottom: 10px; }
+.section-title h2 { margin: 0; font-size: 28px; }
+.section-title p { margin: 4px 0 0; color: #6b7280; }
 
 /* Cards */
 .grid {
   max-width: var(--maxw);
-  margin: 0 auto 60px;
+  margin: auto;
   padding: 0 16px;
   display: grid;
-  grid-template-columns: 1fr;
   gap: 16px;
 }
-.card {
-  background: #0f172a;
-  border: 1px solid #1f2937;
-  border-radius: 16px;
-  overflow: hidden;
-}
-.card-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #1f2937;
-  display: flex; align-items: center; gap: 10px;
-}
-.tag { font-size: 12px; color: #93c5fd; background: #0b2a4a; padding: 2px 8px; border-radius: 999px; }
 
-/* Headings row: 6 virtual columns */
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+}
+
+.card-header {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tag {
+  font-size: 12px;
+  background: #e0f2fe;
+  color: #075985;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* Headings */
 .hgrid6 {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
   padding: 10px 16px 0;
+  font-size: 12px;
+  color: #6b7280;
 }
-.hgrid6 .h1, .hgrid6 .h2, .hgrid6 .h3 {
-  text-align: center; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: .5px;
-}
-.hgrid6 .h1 { grid-column: 1 / span 2; } /* Original, Target */
-.hgrid6 .h2 { grid-column: 3 / span 2; } /* Vevo, QuickVC */
-.hgrid6 .h3 { grid-column: 5 / span 2; } /* DM-23M, DM-67M */
+.h1 { grid-column: 1 / span 2; text-align: center; }
+.h2 { grid-column: 3 / span 2; text-align: center; }
+.h3 { grid-column: 5 / span 2; text-align: center; }
 
-/* One-row player strip (scrolls horizontally on small screens) */
+/* Audio strip */
 .nowrap-row {
   display: flex;
   gap: 12px;
   padding: 8px 16px 14px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  flex-wrap: nowrap;        /* <-- important */
 }
+
 .acol {
-  min-width: 0;
-  width: max-content;
   display: flex;
   flex-direction: column;
-  gap: 6px;
   align-items: center;
-}
-.alabel { font-size: 12px; color: #cbd5e1; text-align: center; }
-audio { width: 170px; border-radius: 14px; }
-.missing { height: 40px; display: grid; place-items: center; color: #64748b; background: #0b0f1c; border: 1px dashed #1f2937; border-radius: 12px; }
-
-.footer { text-align: center; color: #64748b; margin: 28px 0 40px; }
-
-/* --- force small audio pills in one horizontal row --- */
-.nowrap-row { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; }
-
-.nowrap-row .acol { width: auto; min-width: 0; align-items: center; }
-
-.nowrap-row audio {
-  width: 180px !important;     /* adjust 150–200px as you like */
-  min-width: 0 !important;     /* override UA min-width */
-  flex: 0 0 auto;              /* don't stretch */
+  gap: 4px;
 }
 
-/* WebKit (Chrome/Safari) also needs this to shrink the chrome */
-.nowrap-row audio::-webkit-media-controls-enclosure {
-  width: 180px !important;
-  max-width: 180px !important;
+.alabel { font-size: 12px; }
+
+audio {
+  width: 180px;
 }
 
-.metrics { font-size: 11px; color: #9ca3af; text-align: center; line-height: 1.25; }
+.metrics {
+  font-size: 11px;
+  color: #6b7280;
+}
 .metrics .err { font-weight: 600; }
 
-
-/* --- Light theme overrides: paste at the END of style.css --- */
-
-body { background: #f9fafb; color: #111827; }
-
-.header h1 { color: #0f172a; }
-.subtitle { color: #4b5563; }
-
-.figure-wrap { }
-.arch-img {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-}
-
-.card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-}
-.card-header { border-bottom: 1px solid #e5e7eb; }
-
-.tag {
-  color: #075985;                 /* slate-blue text */
-  background: #e0f2fe;            /* light cyan badge */
-}
-
-.hgrid6 .h1, .hgrid6 .h2, .hgrid6 .h3 { color: #6b7280; }  /* headings */
-.alabel { color: #374151; }                                 /* labels */
-
-.missing {
-  color: #6b7280;
-  background: #f3f4f6;
-  border: 1px dashed #d1d5db;
-}
-
-.footer { color: #6b7280; }
-
-.section-title {
-  max-width: var(--maxw);
-  margin: 8px auto 8px;
-  padding: 0 16px;
+.footer {
   text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin: 28px 0;
 }
-.section-title h2 {
-  margin: 0 0 4px;
-  font-size: 28px;
-  font-weight: 800;
-}
-.section-title p {
-  margin: 0;
-  font-size: 16px;
-  color: #6b7280; /* subtle subtitle (looks good on light theme) */
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+
+  .header h1 { font-size: 18px; }
+
+  .section-title h2 { font-size: 20px; }
+  .section-title p { font-size: 14px; }
+
+  .arch-img { border-radius: 12px; }
+
+  audio { width: 140px; }
+
+  .metrics { font-size: 10px; }
+
+  .mobile-hint { font-size: 13px; }
 }
